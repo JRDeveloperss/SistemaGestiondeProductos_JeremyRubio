@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Sistema_de_Gestión_de_Productos.Data;
 using Sistema_de_Gestión_de_Productos.Models;
 
@@ -12,6 +13,15 @@ namespace SistemaGestiondeProductos_JeremyRubio.Controllers
         public ProductosController(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ListaProductosIndex()
+        {
+            var productos = await _context.Productos
+                .OrderByDescending(p => p.CreacionFecha).ToListAsync();
+
+            return View(productos);
         }
 
         [HttpGet]
@@ -38,5 +48,7 @@ namespace SistemaGestiondeProductos_JeremyRubio.Controllers
 
             return RedirectToAction(nameof(Create));
         }
+
+
     }
 }
