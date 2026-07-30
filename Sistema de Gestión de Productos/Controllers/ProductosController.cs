@@ -50,5 +50,59 @@ namespace SistemaGestiondeProductos_JeremyRubio.Controllers
         }
 
 
+
+
+        [HttpGet]
+        public async Task<IActionResult> Editar(int? Id)
+        {
+            if (Id == null)
+            {
+                return NotFound();
+            }
+
+            var producto = await _context.Productos.FindAsync(Id);
+
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            return View(producto);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Editar(int Id, Producto producto)
+        {
+            if (Id != producto.Id)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(producto);
+            }
+
+            var productoExistente = await _context.Productos.FindAsync(Id);
+
+            if (productoExistente == null)
+            {
+                return NotFound();
+            }
+
+            productoExistente.Nombre = producto.Nombre;
+            productoExistente.Descripcion = producto.Descripcion;
+            productoExistente.Precio = producto.Precio;
+            productoExistente.Cantidad = producto.Cantidad;
+
+            await _context.SaveChangesAsync();
+
+            TempData["Mensaje"] = "Producto actualizado correctamente.";
+
+            return RedirectToAction(nameof(ListaProductosIndex));
+        }
+
+
     }
 }
