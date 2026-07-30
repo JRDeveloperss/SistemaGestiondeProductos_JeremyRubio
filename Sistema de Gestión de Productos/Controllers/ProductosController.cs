@@ -103,6 +103,44 @@ namespace SistemaGestiondeProductos_JeremyRubio.Controllers
             return RedirectToAction(nameof(ListaProductosIndex));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Eliminar(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var producto = await _context.Productos
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            return View(producto);
+        }
+
+        [HttpPost, ActionName("Eliminar")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EliminarConfirmado(int id)
+        {
+            var producto = await _context.Productos.FindAsync(id);
+
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            _context.Productos.Remove(producto);
+            await _context.SaveChangesAsync();
+
+            TempData["Mensaje"] = "Producto eliminado correctamente.";
+
+            return RedirectToAction("ListaProductosIndex");
+        }
+
 
     }
 }
